@@ -1,52 +1,46 @@
+-- Selects effort in hours per team member per work package.
 SELECT 
-	CONCAT(ap.StringID, ' ', ap.Name) as 'Arbeitspaket', 
-	CONCAT( ma.Vorname, ' ', ma.Name ) as 'Mitarbeitername', 	
-	ROUND(SUM(au.Aufwand) * 8, 2) as 'Aufwand in Stunden', 
-	GROUP_CONCAT(DISTINCT au.Beschreibung SEPARATOR '; ') as Beschreibung
+	CONCAT(ap.string_id, ' ', ap.name) as 'Arbeitspaket', 
+	CONCAT( ma.first_name, ' ', ma.last_name ) as 'Mitarbeitername', 	
+	ROUND(SUM(au.effort) * 8, 2) as 'Aufwand in Stunden', 
+	GROUP_CONCAT(DISTINCT au.description SEPARATOR '; ') as Beschreibung
 FROM 
-	Aufwand as au 
-		left outer join Mitarbeiter ma on ( au.FID_Ma = ma.Login ) 
-		left outer join Arbeitspaket ap on ( 
-			au.FID_Proj = ap.FID_Proj AND 
-			au.LVL1ID = ap.LVL1ID AND 
-			au.LVL2ID = ap.LVL2ID AND 
-			au.LVL3ID = ap.LVL3ID AND 
-			au.LVLxID = ap.LVLxID )
-WHERE 
-	DATE(au.Datum) BETWEEN DATE('2014-02-23') AND DATE('2014-03-01')
-	-- Dateformat: 'YYYY-MM-DD'
-GROUP BY ap.StringID, ma.Name
-ORDER BY ma.Name ASC;
+	work_effort as au 
+		left outer join employees ma on ( au.fid_emp = ma.id ) 
+		left outer join workpackage ap on ( au.fid_wp = ap.id )
+-- Uncomment to restrict output to a certain week.
+-- Dateformat: 'YYYY-MM-DD'
+-- WHERE 
+	-- DATE(au.rec_date) BETWEEN DATE('2014-02-23') AND DATE('2014-03-01')
+	
+GROUP BY ap.string_id, ma.id
+ORDER BY ma.last_name ASC;
+
+-- Selects all work efforts per user per week.
 
 SELECT 
-	CONCAT( ma.Vorname, ' ', ma.Name ) as 'Mitarbeitername', 	
-	ROUND(SUM(au.Aufwand) * 8, 2) as 'Aufwand in Stunden' 
+	CONCAT( ma.first_name, ' ', ma.last_name ) as 'Mitarbeitername', 	
+	ROUND(SUM( au.effort ) * 8, 2) as 'Aufwand in Stunden' 
 FROM 
-	Aufwand as au 
-		left outer join Mitarbeiter ma on ( au.FID_Ma = ma.Login ) 
-		left outer join Arbeitspaket ap on ( 
-			au.FID_Proj = ap.FID_Proj AND 
-			au.LVL1ID = ap.LVL1ID AND 
-			au.LVL2ID = ap.LVL2ID AND 
-			au.LVL3ID = ap.LVL3ID AND 
-			au.LVLxID = ap.LVLxID )
-WHERE 
-	DATE(au.Datum) BETWEEN DATE('2014-02-23') AND DATE('2014-03-01')
-	-- Dateformat: 'YYYY-MM-DD'
-GROUP BY ma.Name
-ORDER BY ma.Name ASC;
+	work_effort as au 
+		left outer join employees ma on ( au.fid_emp = ma.id ) 
+		left outer join workpackage ap on ( au.fid_wp = ap.id )
+
+-- Uncomment to restrict output to a certain week.
+-- Dateformat: 'YYYY-MM-DD'
+-- WHERE 
+	-- DATE(au.rec_date) BETWEEN DATE('2014-02-23') AND DATE('2014-03-01')
+GROUP BY ma.id
+ORDER BY ma.last_name ASC;
+
+-- Selects all work effort for the whole project duration per member.
 
 SELECT 
-	CONCAT( ma.Vorname, ' ', ma.Name ) as 'Mitarbeitername', 	
-	ROUND(SUM(au.Aufwand) * 8, 2) as 'Aufwand in Stunden' 
+	CONCAT( ma.first_name, ' ', ma.last_name ) as 'Mitarbeitername', 	
+	ROUND(SUM(au.effort) * 8, 2) as 'Aufwand in Stunden' 
 FROM 
-	Aufwand as au 
-		left outer join Mitarbeiter ma on ( au.FID_Ma = ma.Login ) 
-		left outer join Arbeitspaket ap on ( 
-			au.FID_Proj = ap.FID_Proj AND 
-			au.LVL1ID = ap.LVL1ID AND 
-			au.LVL2ID = ap.LVL2ID AND 
-			au.LVL3ID = ap.LVL3ID AND 
-			au.LVLxID = ap.LVLxID )
-GROUP BY ma.Name
-ORDER BY ma.Name ASC;
+	work_effort as au 
+		left outer join employees ma on ( au.fid_emp = ma.id ) 
+		left outer join workpackage ap on ( au.fid_wp = ap.id )
+GROUP BY ma.id
+ORDER BY ma.last_name ASC;
